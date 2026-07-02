@@ -11,7 +11,7 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  const { loading, handleLogin } = useAuth();
+  const { loading, user, handleLogin } = useAuth();
 
   const navigate = useNavigate();
 
@@ -23,6 +23,11 @@ function Login() {
 
   if (loading) {
     return <Loader variant="spinner" size="md" label="Loading" />;
+  }
+
+  if (user) {
+    navigate("/");
+    return null;
   }
 
   return (

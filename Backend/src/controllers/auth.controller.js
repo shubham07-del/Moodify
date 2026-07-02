@@ -29,7 +29,14 @@ async function registerController(req, res) {
     { expiresIn: "1d" },
   );
 
-  res.cookie("token", token);
+  const cookieOptions = {
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  };
+
+  res.cookie("token", token, cookieOptions);
   res.status(201).json({
     message: "User registered successsfully.",
     user: {
@@ -71,7 +78,14 @@ async function loginController(req, res) {
     { expiresIn: "1d" },
   );
 
-  res.cookie("token", token);
+  const cookieOptions = {
+    maxAge: 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  };
+
+  res.cookie("token", token, cookieOptions);
   res.status(201).json({
     message: "User loggedin successsfully.",
     user: {
@@ -94,13 +108,19 @@ async function getMeController(req, res) {
 async function logoutUser(req, res) {
   const token = req.cookies.token;
 
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
 
-  await redis.set(token, Date.now().toString(), "EX",60*60)
+  if (token) {
+    await redis.set(token, Date.now().toString(), "EX", 60 * 60);
+  }
 
   res.status(201).json({
-    message:"User logout successfully."
-  })
+    message: "User logout successfully."
+  });
 }
 
 module.exports = {

@@ -11,21 +11,25 @@ function Login() {
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false)
 
-  const {loading, handleRegister} = useAuth()
+  const {loading, user, handleRegister} = useAuth()
 
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await handleRegister({username, email, password});
-      navigate("/login");
+      navigate("/");
     
   };
 
   if(loading){
     return <Loader variant="spinner" size="md" label="Loading" />
   }
- 
+
+  if (user) {
+    navigate("/");
+    return null;
+  }
   return (
     <div className="min-h-screen w-full bg-[#141310] flex items-center justify-center p-6">
       <div className="w-full max-w-sm">
