@@ -38,8 +38,8 @@ export default function Expression() {
       {/* Moodify Logo */}
       <div className="absolute top-4 left-4 md:top-6 md:left-8 z-50">
         <div className="flex items-center gap-2 justify-center">
-          <div className="w-8 h-8 rounded-md bg-[#e8823c] flex items-center justify-center shadow-md">
-            <CirclePlay className="w-6 h-6 text-[#141310]" strokeWidth={2.5} />
+          <div className="w-8 h-8 flex items-center justify-center overflow-hidden">
+            <img src="/Moodify%202.png" alt="Moodify Logo" className="w-full h-full object-contain drop-shadow-md" />
           </div>
           <span className="text-[#f2ede4] font-semibold tracking-tight text-lg drop-shadow-md">
             Moodify

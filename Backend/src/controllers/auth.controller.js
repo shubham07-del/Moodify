@@ -41,10 +41,16 @@ async function registerController(req, res) {
 
 async function loginController(req, res) {
   const { username, email, password } = req.body;
+  const searchConditions = [];
+  if (email) searchConditions.push({ email });
+  if (username) searchConditions.push({ username });
+
+  if (searchConditions.length === 0) {
+    return res.status(400).json({ message: "Email or username is required." });
+  }
+
   const user = await userModel
-    .findOne({
-      $or: [{ email }, { username }],
-    })
+    .findOne({ $or: searchConditions })
     .select("+password");
   if (!user) {
     return res.status(400).json({
