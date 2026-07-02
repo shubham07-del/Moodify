@@ -3,7 +3,6 @@ import { initialize, detect } from "../utils/utils.js";
 import { useSong } from "../../home/hooks/useSong.js";
 import Player from "../../home/components/Player.jsx";
 import Logout from "../../home/components/Logout.jsx";
-import { CirclePlay, Lock } from "lucide-react";
 
 export default function Expression() {
   const videoRef = useRef(null);
