@@ -8,9 +8,16 @@ export const initialize = async ({videoRef, setEmotion}) => {
       });
 
       videoRef.current.srcObject = stream;
+      
+      // Some browsers require explicitly calling play
+      videoRef.current.play().catch(e => console.error("Play failed:", e));
 
       await new Promise((resolve) => {
-        videoRef.current.onloadedmetadata = resolve;
+        if (videoRef.current.readyState >= 2) {
+            resolve();
+        } else {
+            videoRef.current.addEventListener('loadeddata', resolve, { once: true });
+        }
       });
 
       const vision = await FilesetResolver.forVisionTasks(
@@ -26,15 +33,20 @@ export const initialize = async ({videoRef, setEmotion}) => {
         numFaces: 1,
         outputFaceBlendshapes: true,
       });
+      setEmotion("Ready to detect");
     } catch (err) {
       console.error(err);
-      setEmotion("Error loading model");
+      if (err.name === 'NotAllowedError') {
+        setEmotion("Camera permission denied. Please allow camera access.");
+      } else {
+        setEmotion("Error loading model");
+      }
     }
   };
 
 export const detect = ({videoRef, setEmotion}) => {
     if (!faceLandmarker || !videoRef.current) {
-      return;
+      return null;
     }
 
     const results = faceLandmarker.detectForVideo(
@@ -63,14 +75,19 @@ export const detect = ({videoRef, setEmotion}) => {
       const browUp =
         shapes.find((s) => s.categoryName === "browInnerUp")?.score || 0;
 
-      if (smileLeft > 0.5 && smileRight > 0.5) {
+      if (smileLeft > 0.2 || smileRight > 0.2) {
         setEmotion("😊 Happy");
-      } else if (frownLeft > 0.004 && frownRight > 0.004) {
+        return "happy";
+      } else if (frownLeft > 0.005 || frownRight > 0.005) {
         setEmotion("😔 Sad");
-      } else if (jawOpen > 0.2 && browUp > 0.3) {
+        return "sad";
+      } else if (jawOpen > 0.1 && browUp > 0.1) {
         setEmotion("😲 Surprised");
+        return "surprised";
       } else {
         setEmotion("😐 Neutral");
+        return "neutral";
       }
     }
+    return null;
   };
