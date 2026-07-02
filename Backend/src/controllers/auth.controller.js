@@ -43,6 +43,7 @@ async function registerController(req, res) {
       username: user.username,
       email: user.email,
     },
+    token,
   });
 }
 
@@ -106,7 +107,7 @@ async function getMeController(req, res) {
 }
 
 async function logoutUser(req, res) {
-  const token = req.cookies.token;
+  const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
   res.clearCookie("token", {
     httpOnly: true,
